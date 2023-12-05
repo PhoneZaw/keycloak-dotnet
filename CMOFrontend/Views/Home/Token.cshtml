@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var user = User;
+    var token = ViewData["Token"];
+}
+
+@if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+{
+    <p>@token</p>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Claim Type</th>
+            <th>Claim Value</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in user.Claims)
+        {
+            <tr>
+                <td>@claim.Type</td>
+                <td>@claim.Value</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>User not authenticated.</p>
+}
