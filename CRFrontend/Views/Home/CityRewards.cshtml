@@ -2,10 +2,18 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    var error = ViewData["Error"];
 
     Console.WriteLine("Success Data - {0}", @Model);
 }
 
 <div class="text-center">
-    <h1 class="display-4">City Rewards Amount - @Model</h1>
+    @if (error is not null)
+    {
+        <h1 class="display-4">Error - @error</h1>
+    }
+    else
+    {
+        <h1 class="display-4">City Rewards Amount - @Model</h1>
+    }
 </div>

@@ -12,7 +12,8 @@ namespace CRBackend.Controllers
     public class CRAmountController : ControllerBase
     {
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Route("")]
+        [Authorize(Roles = "Employee")]
         public IActionResult GetAmount()
         {
             try
@@ -34,7 +35,7 @@ namespace CRBackend.Controllers
                     currentAmount = "Zero";
                 }
 
-                return Ok(currentAmount);
+                return Ok( currentAmount );
                 
             }
             catch (Exception e)

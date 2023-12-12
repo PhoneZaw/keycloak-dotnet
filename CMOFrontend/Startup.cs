@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using CMOFrontend.Helper;
+using CMOFrontend.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CMOFrontend
 {
@@ -48,76 +51,36 @@ namespace CMOFrontend
                 options.SaveTokens = true;
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
-                options.Scope.Add("cmo_client");
+                //options.Scope.Add("roles");
+                options.Scope.Add("age");
                 options.CallbackPath = "/signin-oidc"; // Set the callback path
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
+                options.SaveTokens = true;
 
                 options.Events = new OpenIdConnectEvents()
                 {
-                    OnAuthorizationCodeReceived = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
-
-                    OnMessageReceived = context =>
-                    {
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnRedirectToIdentityProvider = context =>
-                    {
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnRedirectToIdentityProviderForSignOut = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
-
-                    OnSignedOutCallbackRedirect = context =>
-                    {
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnTokenResponseReceived = context =>
-                    {
-
-                        return Task.CompletedTask;
-
-                    },
 
                     OnTokenValidated = context =>
                     {
-
                         var accessToken = context.SecurityToken as JwtSecurityToken;
                         if (accessToken != null)
                         {
                             // Extract claims from the access token and add them to ClaimsPrincipal
-                            var claims = accessToken.Claims;
+                            var idToken = context.TokenEndpointResponse?.IdToken;
+                            var claims = accessToken.Claims.ToList();
+                            if (claims.FirstOrDefault(c => c.Type == "realm_access") is not null)
+                            {
+                                var roleClaims = JsonHelper.Deserialize<RealmAccess>(claims.FirstOrDefault(c => c.Type == "realm_access")?.Value);
+
+                                foreach (var role in roleClaims.Roles)
+                                {
+                                    claims.Add(new Claim(ClaimTypes.Role, role));
+                                }
+                            }
+
                             context.Principal.AddIdentity(new ClaimsIdentity(claims));
                         }
 
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnUserInformationReceived = context =>
-                    {
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnRemoteSignOut = context =>
-                    {
-                        return Task.CompletedTask;
-
-                    },
-
-                    OnAuthenticationFailed = context =>
-                    {
                         return Task.CompletedTask;
 
                     },
@@ -157,21 +120,19 @@ namespace CMOFrontend
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
 
-            app.Use(async (context, next) =>
-            {
-                await next();
+            //app.Use(async (context, next) =>
+            //{
+            //    if (context.User.Identity is { IsAuthenticated: true } && !context.User.IsInRole("Employee"))
+            //    {
+            //        context.Response.StatusCode = 403;
 
-                if (context.Response.StatusCode == 401)
-                {
-                    // Redirect to the Keycloak login URL
-                    var authenticationProperties = new AuthenticationProperties
-                    {
-                        RedirectUri = context.Request.Path
-                    };
+            //        await context.Response.WriteAsync("Forbidden");
 
-                    await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, authenticationProperties);
-                }
-            });
+            //        return;
+            //    }
+
+            //    await next();
+            //});
 
             app.UseEndpoints(endpoints =>
             {

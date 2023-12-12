@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRFrontend", "CRFrontend\CR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMOFrontend", "CMOFrontend\CMOFrontend.csproj", "{916578C6-EB6E-4A0C-8849-AC5EBD051BEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMOBackend", "CMOBackend\CMOBackend.csproj", "{86222BB3-69A8-49E3-93E3-D84412602299}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{916578C6-EB6E-4A0C-8849-AC5EBD051BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{916578C6-EB6E-4A0C-8849-AC5EBD051BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{916578C6-EB6E-4A0C-8849-AC5EBD051BEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86222BB3-69A8-49E3-93E3-D84412602299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86222BB3-69A8-49E3-93E3-D84412602299}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86222BB3-69A8-49E3-93E3-D84412602299}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86222BB3-69A8-49E3-93E3-D84412602299}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

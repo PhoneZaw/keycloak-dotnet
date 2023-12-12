@@ -10,14 +10,56 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using System.Net.Http;
 using System.IdentityModel.Tokens.Jwt;
+using CMOFrontend.Helper;
+using System.Security.Claims;
 
 namespace CMOFrontend.Controllers
 {
     public class HomeController : Controller
     {
-
         public IActionResult Index()
         {
+
+            var token = HttpContext.GetTokenAsync("access_token").Result;
+
+            ViewData["Token"] = "Unauthorize";
+
+            ViewData["roles"] = "";
+
+            if (token == null)
+            {
+                return View();
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var accessToken = handler.ReadJwtToken(token);
+
+            var claims = accessToken.Claims.ToList();
+
+            var realmClaim = claims.FirstOrDefault(c => c.Type == "realm_access")?.Value;
+
+            var userName = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+
+            if (User.HasClaim(c => c.Type == "age"))
+            {
+                ViewData["age"] = $"Age : {claims.FirstOrDefault(c => c.Type == "age")?.Value}";
+            }
+            else
+            {
+                ViewData["age"] = "Age is not allowed";
+            }
+
+            if (realmClaim != null)
+            {
+                var realmAccessClaim = JsonHelper.Deserialize<RealmAccess>(realmClaim);
+
+                var roles = realmAccessClaim.Roles.Where(c => c is "Employee" or "Customer");
+
+                ViewData["roles"] = string.Join(", ", roles);
+            }
+
+            ViewData["Token"] = token;
+
             return View();
         }
 
@@ -52,7 +94,10 @@ namespace CMOFrontend.Controllers
             var result = await client.GetAsync("https://localhost:44309/api/CRAmount");
 
             if (!result.IsSuccessStatusCode)
-                return StatusCode((int)result.StatusCode);
+            {
+                ViewData["Error"] = "Unauthorize";
+                return View();
+            }
 
             var data = await result.Content.ReadAsStringAsync();
 

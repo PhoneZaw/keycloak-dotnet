@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,22 +6,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CRBackend.Filters;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
-using CRBackend.Helper;
-using CRBackend.Models;
-using Microsoft.AspNetCore.SignalR.Protocol;
-using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
+using CMOBackend.Helper;
+using CMOBackend.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
-namespace CRBackend
+namespace CMOBackend
 {
     public class Startup
     {
@@ -35,18 +29,21 @@ namespace CRBackend
 
         public IConfiguration Configuration { get; }
 
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers(
-                config => config.Filters.Add(typeof(TokenFilter))
-                );
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CMOBackend", Version = "v1" });
+            });
 
             services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(x =>
                 {
                     x.MetadataAddress = "http://192.168.2.21:8081/realms/myrealm/.well-known/openid-configuration";
@@ -55,7 +52,7 @@ namespace CRBackend
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "http://192.168.2.21:8081/auth/realms/KeyCloakRealm",
+                        ValidIssuer = "http://192.168.2.21:8081/auth/realms/myrealm",
 
                         ValidAudience = "account",
                         ValidateAudience = true,
@@ -103,11 +100,6 @@ namespace CRBackend
 
                 });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRBackend", Version = "v1" });
-            });
-
             services.AddCors(options => options.AddDefaultPolicy(
                 app =>
                 {
@@ -116,7 +108,7 @@ namespace CRBackend
                     app.AllowAnyOrigin();
                 }
         ));
-    }
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -125,16 +117,12 @@ namespace CRBackend
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRBackend v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CMOBackend v1"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseCors();
-
-            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -1,3 +1,5 @@
+using CRBackend.Helper;
+using CRFrontend.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -9,8 +11,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace CRFrontend
 {
@@ -46,11 +53,6 @@ namespace CRFrontend
                 options.Scope.Add("profile");
                 options.CallbackPath = "/signin-oidc"; // Set the callback path
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "pz",
-                    RoleClaimType = "user"
-                };
 
                 options.Events = new OpenIdConnectEvents()
                 {
@@ -91,6 +93,23 @@ namespace CRFrontend
 
                     OnTokenValidated = context =>
                     {
+
+                        //var accessToken = context.SecurityToken as JwtSecurityToken;
+                        //if (accessToken != null)
+                        //{
+                        //    // Extract claims from the access token and add them to ClaimsPrincipal
+                        //    var claims = accessToken.Claims.ToList();
+
+                        //    var roleClaims = JsonHelper.Deserialize<RealmAccess>(claims.FirstOrDefault(c => c.Type == "realm_access")?.Value);
+
+                        //    foreach (var role in roleClaims.Roles)
+                        //    {
+                        //        claims.Add(new Claim(ClaimTypes.Role, role));
+                        //    }
+
+                        //    context.Principal.AddIdentity(new ClaimsIdentity(claims));
+                        //}
+
                         return Task.CompletedTask;
 
                     },
@@ -138,6 +157,20 @@ namespace CRFrontend
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            //app.Use(async (context, next) =>
+            //{
+            //    if (context.User.Identity is { IsAuthenticated: true } && !context.User.IsInRole("Employee"))
+            //    {
+            //        context.Response.StatusCode = 403;
+
+            //        await context.Response.WriteAsync("Forbidden");
+
+            //        return;
+            //    }
+
+            //    await next();
+            //});
 
             app.UseEndpoints(endpoints =>
             {

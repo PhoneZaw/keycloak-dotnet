@@ -1,7 +1,45 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var user = User;
+    var token = ViewData["Token"];
+
+    var roles = ViewData["roles"];
+
+    var age = ViewData["age"];
+
+    var error = ViewData["Error"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome from CityRewards</h1>
-</div>
+
+@if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+{
+    <p>@token</p>
+
+    <div class="text-center">
+        
+        @if (error is not null)
+        {
+            <h1 class="display-4">You don't have access to CR. Error - @error</h1>
+        }
+        else
+        {
+            <h1 class="display-4">Welcome from CityRewards</h1>
+        }
+
+        @if (string.IsNullOrEmpty(roles.ToString()))
+        {
+            <h2>You don't have any role</h2>
+        }
+        else
+        {
+            <h2>Hello you are @roles</h2>
+        }
+
+        <p>@age</p>
+
+    </div>
+}
+else
+{
+    <p>User not authenticated.</p>
+}
