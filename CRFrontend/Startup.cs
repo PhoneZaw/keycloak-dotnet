@@ -43,7 +43,7 @@ namespace CRFrontend
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.Authority = "http://192.168.2.21:8081/realms/myrealm";
+                options.Authority = "http://dev.keycloak.com/realms/myrealm";
                 options.RequireHttpsMetadata = false;
                 options.ClientId = "cr_client";
                 options.ClientSecret = "wqQmbaY2p23xtUb3GYmT2ESKqhTJGy6d";
@@ -58,19 +58,20 @@ namespace CRFrontend
                 {
                     OnAuthorizationCodeReceived = context =>
                     {
+                        var cookie = context.Request.Cookies["Routed"];
                         return Task.CompletedTask;
                     },
 
                     OnMessageReceived = context =>
                     {
+                        var cookie = context.Request.Cookies["Routed"];
                         return Task.CompletedTask;
-
                     },
 
                     OnRedirectToIdentityProvider = context =>
                     {
+                        var cookie = context.Request.Cookies["Routed"];
                         return Task.CompletedTask;
-
                     },
 
                     OnRedirectToIdentityProviderForSignOut = context =>

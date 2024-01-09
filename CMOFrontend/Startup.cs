@@ -43,7 +43,9 @@ namespace CMOFrontend
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.Authority = "http://192.168.2.21:8081/realms/myrealm";
+                //options.Authority = "http://192.168.2.21:8081/realms/myrealm";
+                options.Authority = "http://dev.keycloak.com/realms/myrealm";
+                //options.Authority = "http://192.168.2.21:6001/realms/myrealm";
                 options.RequireHttpsMetadata = false;
                 options.ClientId = "cmo_client";
                 options.ClientSecret = "jqZT0VC6cfSfCQ5rIZrWc85nCTnkarHA";
@@ -52,7 +54,7 @@ namespace CMOFrontend
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 //options.Scope.Add("roles");
-                options.Scope.Add("age");
+                //options.Scope.Add("age");
                 options.CallbackPath = "/signin-oidc"; // Set the callback path
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
                 options.SaveTokens = true;

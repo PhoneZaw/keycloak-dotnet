@@ -49,13 +49,13 @@ namespace CRBackend
                 })
                 .AddJwtBearer(x =>
                 {
-                    x.MetadataAddress = "http://192.168.2.21:8081/realms/myrealm/.well-known/openid-configuration";
+                    x.MetadataAddress = "http://dev.keycloak.com/realms/myrealm/.well-known/openid-configuration";
                     x.RequireHttpsMetadata = false; // only for dev
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "http://192.168.2.21:8081/auth/realms/KeyCloakRealm",
+                        ValidIssuer = "http://dev.keycloak.com/auth/realms/myrealm",
 
                         ValidAudience = "account",
                         ValidateAudience = true,

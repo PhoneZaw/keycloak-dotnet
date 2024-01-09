@@ -17,6 +17,8 @@ namespace CMOFrontend.Controllers
         {
             await HttpContext.SignOutAsync();
 
+            var keycloakLogoutUrl = "http://192.168.2.21:6001/realms/myrealm/protocol/openid-connect/revoke";
+
             return Redirect("/");
         }
 
@@ -24,7 +26,7 @@ namespace CMOFrontend.Controllers
         {
             await HttpContext.SignOutAsync();
 
-            var keycloakLogoutUrl = "http://192.168.2.21:8081/realms/myrealm/protocol/openid-connect/logout";
+            var keycloakLogoutUrl = "http://192.168.2.21:6001/realms/myrealm/protocol/openid-connect/logout";
             return Redirect(keycloakLogoutUrl);
         }
     }
